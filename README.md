@@ -27,3 +27,7 @@ $GOBIN/tstorage-server serve
 ```
 
 That's it! If everything works, you should see a message saying `gRPC server is running.`.
+
+## License
+
+This application is licensed under the **BSD 3-Clause License**. See [LICENSE](LICENSE) for more information.
