@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"io"
-	"log"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/nakabonne/tstorage"
