@@ -48,6 +48,11 @@ func (s *TStorageServerImpl) InsertRows(stream pb.TStorage_InsertRowsServer) err
 	// log.Println("Timestamp", in.Timestamp)
 	// log.Println("Labels", in.Labels)
 
+	// DEVELOPERS NOTE:
+	// If you don't understand how server side streaming works using gRPC then
+	// please visit the documentation to get an understanding:
+	// https://grpc.io/docs/languages/go/basics/#server-side-streaming-rpc-1
+
 	// Wait and receieve the stream from the client.
 	for {
 		datum, err := stream.Recv()

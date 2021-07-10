@@ -56,14 +56,28 @@ func doInsertRows() {
 	labels := []*pb.Label{}
 	labels = append(labels, &pb.Label{Name: "Source", Value: "Command"})
 
-	// Perform our gRPC request.
-	r, err := client.InsertRow(ctx, &pb.TimeSeriesDatum{Labels: labels, Metric: metric, Value: value, Timestamp: ts})
+	stream, err := client.InsertRows(ctx)
 	if err != nil {
-		log.Fatalf("could not add: %v", err)
+		log.Fatalf("%v.InsertRows(_) = _, %v", client, err)
 	}
 
-	// Print out the gRPC response.
-	log.Printf("Server Response: %s", r.GetMessage())
+	tsd := &pb.TimeSeriesDatum{Labels: labels, Metric: metric, Value: value, Timestamp: ts}
+
+	// DEVELOPERS NOTE:
+	// To stream from a client to a server using gRPC, the following documentation
+	// will help explain how it works. Please visit it if the code below does
+	// not make any sense.
+	// https://grpc.io/docs/languages/go/basics/#client-side-streaming-rpc-1
+
+	if err := stream.Send(tsd); err != nil {
+        log.Fatalf("%v.Send(%v) = %v", stream, tsd, err)
+    }
+
+	reply, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
+	}
+	log.Printf("Server Response: %v", reply)
 }
 
 var insertRowsCmd = &cobra.Command{
