@@ -18,7 +18,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TStorageClient interface {
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*InsertResponse, error)
 	InsertRows(ctx context.Context, opts ...grpc.CallOption) (TStorage_InsertRowsClient, error)
 	Select(ctx context.Context, in *Filter, opts ...grpc.CallOption) (TStorage_SelectClient, error)
@@ -30,15 +29,6 @@ type tStorageClient struct {
 
 func NewTStorageClient(cc grpc.ClientConnInterface) TStorageClient {
 	return &tStorageClient{cc}
-}
-
-func (c *tStorageClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/proto.TStorage/SayHello", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *tStorageClient) InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*InsertResponse, error) {
@@ -120,7 +110,6 @@ func (x *tStorageSelectClient) Recv() (*DataPoint, error) {
 // All implementations must embed UnimplementedTStorageServer
 // for forward compatibility
 type TStorageServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	InsertRow(context.Context, *TimeSeriesDatum) (*InsertResponse, error)
 	InsertRows(TStorage_InsertRowsServer) error
 	Select(*Filter, TStorage_SelectServer) error
@@ -131,9 +120,6 @@ type TStorageServer interface {
 type UnimplementedTStorageServer struct {
 }
 
-func (UnimplementedTStorageServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
-}
 func (UnimplementedTStorageServer) InsertRow(context.Context, *TimeSeriesDatum) (*InsertResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InsertRow not implemented")
 }
@@ -154,24 +140,6 @@ type UnsafeTStorageServer interface {
 
 func RegisterTStorageServer(s grpc.ServiceRegistrar, srv TStorageServer) {
 	s.RegisterService(&TStorage_ServiceDesc, srv)
-}
-
-func _TStorage_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TStorageServer).SayHello(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.TStorage/SayHello",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TStorageServer).SayHello(ctx, req.(*HelloRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _TStorage_InsertRow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -246,10 +214,6 @@ var TStorage_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.TStorage",
 	HandlerType: (*TStorageServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SayHello",
-			Handler:    _TStorage_SayHello_Handler,
-		},
 		{
 			MethodName: "InsertRow",
 			Handler:    _TStorage_InsertRow_Handler,

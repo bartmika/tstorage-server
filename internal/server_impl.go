@@ -16,11 +16,6 @@ type TStorageServerImpl struct {
 	pb.TStorageServer
 }
 
-func (s *TStorageServerImpl) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
-}
-
 func (s *TStorageServerImpl) InsertRow(ctx context.Context, in *pb.TimeSeriesDatum) (*pb.InsertResponse, error) {
 	// // For debugging purposes only.
 	// log.Println("Metric", in.Metric)
