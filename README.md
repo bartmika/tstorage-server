@@ -28,7 +28,7 @@ $GOBIN/tstorage-server serve
 
 That's it! If everything works, you should see a message saying `gRPC server is running.`.
 
-## Sub-Commands
+## Subcommands Reference
 
 ### ``serve``
 Run the gRPC server to allow other services to access the storage application
@@ -74,6 +74,231 @@ $GOBIN/tstorage-server insert_row -p=50051 -m="solar_biodigester_temperature_in_
 
 Developer Notes:
 - There also exists a `insert_rows` subcommand but it works exactly as `insert_row` command with the exception that the internal code is using streaming. This is done so programmers can look at the code and see how to use streaming of time-series data.
+
+### ``select``
+Connect to the gRPC server and return list of results based on a selection filter.
+
+Fields
+
+* `-p` or `--port` is for the port for this server to run on. Default value is 50051 if you don't use this option.
+* `-m` or `--metric` is for the metric to insert with the time-series datum. This field is required.
+* `-s` or `--start` is for the start timestamp to begin our range by.
+* `-e` or `--end` is for the end timestamp to finish our range by.
+
+Example:
+
+```bash
+$GOBIN/tstorage-server select --port=50051 --metric="bio_reactor_pressure_in_kpa" --start=1600000000 --end=1725946120
+```
+
+
+## How to Access using gRPC
+
+### Example 1 - Insert a Single Row
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"google.golang.org/grpc"
+
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
+
+	pb "github.com/bartmika/tstorage-server/proto"
+)
+
+func main() {
+  port := 50051
+
+	// Set up a direct connection to the gRPC server.
+	conn, err := grpc.Dial(
+		fmt.Sprintf(":%v", port),
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+	)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	// Set up our protocol buffer interface.
+	client := pb.NewTStorageClient(conn)
+	defer conn.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	ts := &tspb.Timestamp{
+		Seconds: tsv,
+		Nanos:   0,
+	}
+
+	// Generate our labels.
+	labels := []*pb.Label{}
+	labels = append(labels, &pb.Label{Name: "Host", Value: "127.0.0.1"})
+
+	// Perform our gRPC request.
+	r, err := client.InsertRow(ctx, &pb.TimeSeriesDatum{Labels: labels, Metric: "cpu_temperature", Value: 32.0, Timestamp: 1600000000})
+	if err != nil {
+		log.Fatalf("could not add: %v", err)
+	}
+
+	// Print out the gRPC response.
+	log.Printf("Server Response: %s", r.GetMessage())
+}
+```
+
+
+### Example 2 - Insert Multiple Rows
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"google.golang.org/grpc"
+
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
+
+	pb "github.com/bartmika/tstorage-server/proto"
+)
+
+func main() {
+  port := 50051
+  
+	// Set up a direct connection to the gRPC server.
+	conn, err := grpc.Dial(
+		fmt.Sprintf(":%v", port),
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+	)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	// Set up our protocol buffer interface.
+	client := pb.NewTStorageClient(conn)
+	defer conn.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	ts := &tspb.Timestamp{
+		Seconds: tsv,
+		Nanos:   0,
+	}
+
+	// Generate our labels.
+	labels := []*pb.Label{}
+	labels = append(labels, &pb.Label{Name: "Source", Value: "Command"})
+
+	stream, err := client.InsertRows(ctx)
+	if err != nil {
+		log.Fatalf("%v.InsertRows(_) = _, %v", client, err)
+	}
+
+	tsd := &pb.TimeSeriesDatum{Labels: labels, Metric: "gpu_temperature, Value: 72, Timestamp: 1600000000}
+
+	// DEVELOPERS NOTE:
+	// To stream from a client to a server using gRPC, the following documentation
+	// will help explain how it works. Please visit it if the code below does
+	// not make any sense.
+	// https://grpc.io/docs/languages/go/basics/#client-side-streaming-rpc-1
+
+	if err := stream.Send(tsd); err != nil {
+        log.Fatalf("%v.Send(%v) = %v", stream, tsd, err)
+    }
+
+	reply, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
+	}
+	log.Printf("Server Response: %v", reply)
+}
+```
+
+### Example 3 - Select
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"log"
+	"time"
+
+	"google.golang.org/grpc"
+
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
+
+	pb "github.com/bartmika/tstorage-server/proto"
+)
+
+func main() {
+  port := 50051
+  
+	// Set up a direct connection to the gRPC server.
+	conn, err := grpc.Dial(
+		fmt.Sprintf(":%v", port),
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+	)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	// Set up our protocol buffer interface.
+	client := pb.NewTStorageClient(conn)
+	defer conn.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	// Convert the unix timestamp into the protocal buffers timestamp format.
+	sts := &tspb.Timestamp{
+		Seconds: 1600000000,
+		Nanos:   0,
+	}
+	ets := &tspb.Timestamp{
+		Seconds: 1600000009,
+		Nanos:   0,
+	}
+
+	// Generate our labels.
+	labels := []*pb.Label{}
+	labels = append(labels, &pb.Label{Name: "Source", Value: "Command"})
+
+	// Perform our gRPC request.
+	stream, err := client.Select(ctx, &pb.Filter{Labels: labels, Metric: "battery_percent_left", Start: sts, End: ets})
+	if err != nil {
+		log.Fatalf("could not select: %v", err)
+	}
+
+	// Handle our stream of data from the server.
+	for {
+		dataPoint, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("error with stream: %v", err)
+		}
+
+		// Print out the gRPC response.
+		log.Printf("Server Response: %s", dataPoint)
+	}
+}
+```
 
 ## License
 
