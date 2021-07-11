@@ -47,6 +47,33 @@ Example:
 $GOBIN/tstorage-server serve -p=50051 -d="./tsdb" -t="s" -b=1 -w=30
 ```
 
+### ``version``
+Prints the current version of our server
+
+Example:
+
+```bash
+$GOBIN/tstorage-server version
+```
+
+### ``insert_row``
+Connect to the running gRPC server and sends a single time-series datum to insert. Please note, you need to have your `tstorage-server` running with the `serve` subcommand for this `insert_row` command to work!
+
+Fields
+
+* `-p` or `--port` is for the port for this server to run on. Default value is 50051 if you don't use this option.
+* `-m` or `--metric` is for the metric to insert with the time-series datum. This field is required.
+* `-v` or `--value` is for the value of the time-series datum. This field is required.
+* `-t` or `--timestamp` is for the unix epoch time for the time-series datum. This field is required.
+
+Example:
+
+```bash
+$GOBIN/tstorage-server insert_row -p=50051 -m="solar_biodigester_temperature_in_degrees" -v=50 -t=1600000000
+```
+
+Developer Notes:
+- There also exists a `insert_rows` subcommand but it works exactly as `insert_row` command with the exception that the internal code is using streaming. This is done so programmers can look at the code and see how to use streaming of time-series data.
 
 ## License
 
