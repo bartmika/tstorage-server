@@ -70,8 +70,8 @@ func doInsertRows() {
 	// https://grpc.io/docs/languages/go/basics/#client-side-streaming-rpc-1
 
 	if err := stream.Send(tsd); err != nil {
-        log.Fatalf("%v.Send(%v) = %v", stream, tsd, err)
-    }
+		log.Fatalf("%v.Send(%v) = %v", stream, tsd, err)
+	}
 
 	reply, err := stream.CloseAndRecv()
 	if err != nil {
