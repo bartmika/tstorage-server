@@ -300,6 +300,10 @@ func main() {
 }
 ```
 
+### Example 4 - Used by a Golang application
+
+Please see [poller-server](https://github.com/bartmika/poller-server) repository to see a more details.
+
 ## License
 
 This application is licensed under the **BSD 3-Clause License**. See [LICENSE](LICENSE) for more information.
