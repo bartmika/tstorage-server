@@ -173,7 +173,7 @@ import (
 
 func main() {
   port := 50051
-  
+
 	// Set up a direct connection to the gRPC server.
 	conn, err := grpc.Dial(
 		fmt.Sprintf(":%v", port),
@@ -245,8 +245,8 @@ import (
 )
 
 func main() {
-  port := 50051
-  
+    port := 50051
+
 	// Set up a direct connection to the gRPC server.
 	conn, err := grpc.Dial(
 		fmt.Sprintf(":%v", port),
@@ -303,3 +303,7 @@ func main() {
 ## License
 
 This application is licensed under the **BSD 3-Clause License**. See [LICENSE](LICENSE) for more information.
+
+## Acknowledgement
+
+This gRPC server is built overtop [`tstorage`](https://github.com/nakabonne/tstorage) which was architected and written by [Ryo Nakao](https://github.com/nakabonne).
