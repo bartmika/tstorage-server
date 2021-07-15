@@ -1,5 +1,5 @@
 # tstorage-server
-Persistent fast time-series data storage database accessible over gRPC
+Persistent fast time-series data storage server accessible over gRPC.
 
 `tstorage-server` is lightweight local on-disk storage engine server for time-series data accessible over gRPC. Run this server once and share fast time-series data CRUD operations in either local or remote applications.
 The purpose of this server is to allow interprocess communication overtop the [`tstorage`](https://github.com/nakabonne/tstorage) package.
@@ -302,7 +302,7 @@ func main() {
 
 ### Example 4 - Used by a Golang application
 
-Please see [poller-server](https://github.com/bartmika/poller-server) repository to see a more details.
+Please see [poller-server](https://github.com/bartmika/tpoller-server) repository to see a more details.
 
 ## License
 
