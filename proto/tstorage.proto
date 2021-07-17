@@ -4,12 +4,13 @@ option go_package = "github.com/bartmika/tstorage-server";
 
 package proto;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 
 service TStorage {
-    rpc InsertRow (TimeSeriesDatum) returns (InsertResponse) {}
-    rpc InsertRows (stream TimeSeriesDatum) returns (InsertResponse) {}
+    rpc InsertRow (TimeSeriesDatum) returns (google.protobuf.Empty) {}
+    rpc InsertRows (stream TimeSeriesDatum) returns (google.protobuf.Empty) {}
     rpc Select (Filter) returns (stream DataPoint) {}
 }
 
@@ -28,11 +29,6 @@ message TimeSeriesDatum {
     repeated Label labels = 2;
     double value = 3;
     google.protobuf.Timestamp timestamp = 4;
-}
-
-message InsertResponse {
-    string message = 1;
-    bool status = 2;
 }
 
 message Filter {

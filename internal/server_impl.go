@@ -5,6 +5,7 @@ import (
 	"io"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/nakabonne/tstorage"
 
 	pb "github.com/bartmika/tstorage-server/proto"
@@ -15,13 +16,7 @@ type TStorageServerImpl struct {
 	pb.TStorageServer
 }
 
-func (s *TStorageServerImpl) InsertRow(ctx context.Context, in *pb.TimeSeriesDatum) (*pb.InsertResponse, error) {
-	// // For debugging purposes only.
-	// log.Println("Metric", in.Metric)
-	// log.Println("Value", in.Value)
-	// log.Println("Timestamp", in.Timestamp)
-	// log.Println("Labels", in.Labels)
-
+func (s *TStorageServerImpl) InsertRow(ctx context.Context, in *pb.TimeSeriesDatum) (*empty.Empty, error) {
 	// Generate our labels, if there are any.
 	labels := []tstorage.Label{}
 	for _, label := range in.Labels {
@@ -38,16 +33,10 @@ func (s *TStorageServerImpl) InsertRow(ctx context.Context, in *pb.TimeSeriesDat
 			DataPoint: dataPoint,
 		},
 	})
-	return &pb.InsertResponse{Message: "Created"}, err
+	return &empty.Empty{}, err
 }
 
 func (s *TStorageServerImpl) InsertRows(stream pb.TStorage_InsertRowsServer) error {
-	// // For debugging purposes only.
-	// log.Println("Metric", in.Metric)
-	// log.Println("Value", in.Value)
-	// log.Println("Timestamp", in.Timestamp)
-	// log.Println("Labels", in.Labels)
-
 	// DEVELOPERS NOTE:
 	// If you don't understand how server side streaming works using gRPC then
 	// please visit the documentation to get an understanding:
@@ -57,9 +46,7 @@ func (s *TStorageServerImpl) InsertRows(stream pb.TStorage_InsertRowsServer) err
 	for {
 		datum, err := stream.Recv()
 		if err == io.EOF {
-			return stream.SendAndClose(&pb.InsertResponse{
-				Message: "Created",
-			})
+			return stream.SendAndClose(&empty.Empty{})
 		}
 		if err != nil {
 			return err
@@ -87,12 +74,6 @@ func (s *TStorageServerImpl) InsertRows(stream pb.TStorage_InsertRowsServer) err
 }
 
 func (s *TStorageServerImpl) Select(in *pb.Filter, stream pb.TStorage_SelectServer) error {
-	// // For debugging purposes only.
-	// log.Println("Metric", in.Metric)
-	// log.Println("Labels", in.Labels)
-	// log.Println("Start", in.Start.Seconds)
-	// log.Println("End", in.End.Seconds)
-
 	// Generate our labels, if there are any.
 	labels := []tstorage.Label{}
 	for _, label := range in.Labels {

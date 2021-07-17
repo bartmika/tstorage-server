@@ -4,6 +4,7 @@ package tstorage_server
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -18,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TStorageClient interface {
-	InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*InsertResponse, error)
+	InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*empty.Empty, error)
 	InsertRows(ctx context.Context, opts ...grpc.CallOption) (TStorage_InsertRowsClient, error)
 	Select(ctx context.Context, in *Filter, opts ...grpc.CallOption) (TStorage_SelectClient, error)
 }
@@ -31,8 +32,8 @@ func NewTStorageClient(cc grpc.ClientConnInterface) TStorageClient {
 	return &tStorageClient{cc}
 }
 
-func (c *tStorageClient) InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*InsertResponse, error) {
-	out := new(InsertResponse)
+func (c *tStorageClient) InsertRow(ctx context.Context, in *TimeSeriesDatum, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/proto.TStorage/InsertRow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func (c *tStorageClient) InsertRows(ctx context.Context, opts ...grpc.CallOption
 
 type TStorage_InsertRowsClient interface {
 	Send(*TimeSeriesDatum) error
-	CloseAndRecv() (*InsertResponse, error)
+	CloseAndRecv() (*empty.Empty, error)
 	grpc.ClientStream
 }
 
@@ -63,11 +64,11 @@ func (x *tStorageInsertRowsClient) Send(m *TimeSeriesDatum) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *tStorageInsertRowsClient) CloseAndRecv() (*InsertResponse, error) {
+func (x *tStorageInsertRowsClient) CloseAndRecv() (*empty.Empty, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(InsertResponse)
+	m := new(empty.Empty)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ func (x *tStorageSelectClient) Recv() (*DataPoint, error) {
 // All implementations must embed UnimplementedTStorageServer
 // for forward compatibility
 type TStorageServer interface {
-	InsertRow(context.Context, *TimeSeriesDatum) (*InsertResponse, error)
+	InsertRow(context.Context, *TimeSeriesDatum) (*empty.Empty, error)
 	InsertRows(TStorage_InsertRowsServer) error
 	Select(*Filter, TStorage_SelectServer) error
 	mustEmbedUnimplementedTStorageServer()
@@ -120,7 +121,7 @@ type TStorageServer interface {
 type UnimplementedTStorageServer struct {
 }
 
-func (UnimplementedTStorageServer) InsertRow(context.Context, *TimeSeriesDatum) (*InsertResponse, error) {
+func (UnimplementedTStorageServer) InsertRow(context.Context, *TimeSeriesDatum) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InsertRow not implemented")
 }
 func (UnimplementedTStorageServer) InsertRows(TStorage_InsertRowsServer) error {
@@ -165,7 +166,7 @@ func _TStorage_InsertRows_Handler(srv interface{}, stream grpc.ServerStream) err
 }
 
 type TStorage_InsertRowsServer interface {
-	SendAndClose(*InsertResponse) error
+	SendAndClose(*empty.Empty) error
 	Recv() (*TimeSeriesDatum, error)
 	grpc.ServerStream
 }
@@ -174,7 +175,7 @@ type tStorageInsertRowsServer struct {
 	grpc.ServerStream
 }
 
-func (x *tStorageInsertRowsServer) SendAndClose(m *InsertResponse) error {
+func (x *tStorageInsertRowsServer) SendAndClose(m *empty.Empty) error {
 	return x.ServerStream.SendMsg(m)
 }
 

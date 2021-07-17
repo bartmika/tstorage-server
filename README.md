@@ -115,8 +115,8 @@ Please see the [tstorage.proto](https://github.com/bartmika/tstorage-server/blob
 
 ```protobuf
 service TStorage {
-    rpc InsertRow (TimeSeriesDatum) returns (InsertResponse) {}
-    rpc InsertRows (stream TimeSeriesDatum) returns (InsertResponse) {}
+    rpc InsertRow (TimeSeriesDatum) returns (google.protobuf.Empty) {}
+    rpc InsertRows (stream TimeSeriesDatum) returns (google.protobuf.Empty) {}
     rpc Select (Filter) returns (stream DataPoint) {}
 }
 
@@ -137,11 +137,6 @@ message TimeSeriesDatum {
     google.protobuf.Timestamp timestamp = 4;
 }
 
-message InsertResponse {
-    string message = 1;
-    bool status = 2;
-}
-
 message Filter {
     string metric = 1;
     repeated Label labels = 2;
@@ -153,6 +148,52 @@ message SelectResponse {
     repeated DataPoint points = 1;
 }
 ```
+
+## Contributing
+### Development
+If you'd like to setup the project for development. Here are the installation steps:
+
+1. Go to your development folder.
+
+    ```bash
+    cd ~/go/src/github.com/bartmika
+    ```
+
+2. Clone the repository.
+
+    ```bash
+    git clone https://github.com/bartmika/tstorage-server.git
+    cd tstorage-server
+    ```
+
+3. Install the package dependencies
+
+    ```bash
+    go mod tidy
+    ```
+
+4. In your **terminal**, make sure we export our path (if you haven’t done this before) by writing the following:
+
+    ```bash
+    export PATH="$PATH:$(go env GOPATH)/bin"
+    ```
+
+5. Run the following to generate our new gRPC interface. Please note in your development, if you make any changes to the gRPC service definition then you'll need to rerun the following:
+
+    ```bash
+    protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/tstorage.proto
+    ```
+
+6. You are now ready to start the server and begin contributing!
+
+    ```bash
+    go run main.go serve
+    ```
+
+### Quality Assurance
+
+Found a bug? Need Help? Please create an [issue](https://github.com/bartmika/tpoller-server/issues).
+
 
 ## License
 

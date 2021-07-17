@@ -63,13 +63,12 @@ func doInsertRow() {
 	labels = append(labels, &pb.Label{Name: "Source", Value: "Command"})
 
 	// Perform our gRPC request.
-	r, err := client.InsertRow(ctx, &pb.TimeSeriesDatum{Labels: labels, Metric: metric, Value: value, Timestamp: ts})
+	_, err = client.InsertRow(ctx, &pb.TimeSeriesDatum{Labels: labels, Metric: metric, Value: value, Timestamp: ts})
 	if err != nil {
 		log.Fatalf("could not add: %v", err)
 	}
 
-	// Print out the gRPC response.
-	log.Printf("Server Response: %s", r.GetMessage())
+	log.Printf("Successfully inserted")
 }
 
 var insertRowCmd = &cobra.Command{

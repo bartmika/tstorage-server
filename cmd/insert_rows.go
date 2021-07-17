@@ -73,11 +73,11 @@ func doInsertRows() {
 		log.Fatalf("%v.Send(%v) = %v", stream, tsd, err)
 	}
 
-	reply, err := stream.CloseAndRecv()
+	_, err = stream.CloseAndRecv()
 	if err != nil {
 		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
 	}
-	log.Printf("Server Response: %v", reply)
+	log.Printf("Successfully inserted")
 }
 
 var insertRowsCmd = &cobra.Command{
