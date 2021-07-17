@@ -7,14 +7,11 @@ package proto;
 import "google/protobuf/timestamp.proto";
 
 
-// The tstorage service definition.
 service TStorage {
     rpc InsertRow (TimeSeriesDatum) returns (InsertResponse) {}
     rpc InsertRows (stream TimeSeriesDatum) returns (InsertResponse) {}
     rpc Select (Filter) returns (stream DataPoint) {}
 }
-
-// --- COMMON TO ALL ENDPOINTS ---
 
 message DataPoint {
     double value = 3;
@@ -33,14 +30,10 @@ message TimeSeriesDatum {
     google.protobuf.Timestamp timestamp = 4;
 }
 
-// --- INSERT ENDPOINT ---
-
 message InsertResponse {
     string message = 1;
     bool status = 2;
 }
-
-// --- SELECT ENDPOINT ---
 
 message Filter {
     string metric = 1;
