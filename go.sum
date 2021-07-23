@@ -192,6 +192,8 @@ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/nakabonne/tstorage v0.2.0 h1:UnlLhy0fq9/0n6uzJwzh/1Elyz8CcLIMRd/wEOE6W58=
 github.com/nakabonne/tstorage v0.2.0/go.mod h1:n1v68nvIeUguEaYuSqz1ycmiMkF02CJMKSJV0Of1h4w=
+github.com/nakabonne/tstorage v0.2.1 h1:P9dOw4K35thWwdHwpb1VeHG1VFhaCQheHfroiOvWRLs=
+github.com/nakabonne/tstorage v0.2.1/go.mod h1:n1v68nvIeUguEaYuSqz1ycmiMkF02CJMKSJV0Of1h4w=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
