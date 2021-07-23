@@ -178,3 +178,9 @@ private.md
 # Do not save the default time-series database
 tsdb/*
 tsdb
+
+# Do not save our certification stuff.
+cert/ca-cert.pem
+cert/ca-key.pem
+cert/server-key.pem
+cert/server-req.pem

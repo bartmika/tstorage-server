@@ -4,8 +4,8 @@ import (
 	"context"
 	"io"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/empty"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/nakabonne/tstorage"
 
 	pb "github.com/bartmika/tstorage-server/proto"
