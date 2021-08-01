@@ -73,7 +73,7 @@ func (s *TStorageServer) RunMainRuntimeLoop() {
 	s.storage = storage
 
 	// For debugging purposes only.
-	log.Printf("gRPC server is running.")
+	log.Printf("gRPC server is running on port %v", s.port)
 
 	// Block the main runtime loop for accepting and processing gRPC requests.
 	pb.RegisterTStorageServer(grpcServer, &TStorageServerImpl{
