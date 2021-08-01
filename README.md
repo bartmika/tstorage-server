@@ -197,7 +197,7 @@ Found a bug? Need Help? Please create an [issue](https://github.com/bartmika/tpo
 
 ## License
 
-[**BSD 3-Clause License**](LICENSE) © Bartlomiej Mika
+[**ISC License**](LICENSE) © Bartlomiej Mika
 
 ## Acknowledgement
 
